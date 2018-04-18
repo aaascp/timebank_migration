@@ -1,6 +1,7 @@
 package operation
 
 import (
+	"fmt"
 	"log"
 	"timebank/src/collection"
 
@@ -29,16 +30,18 @@ func MakeSaver(filename string) (Saver, Closer) {
 			items = possibleCollections(filename, collectionName)
 		}
 
-		actualCollection := &items[collectionName]
-		// persistableCollection := make([]interface{}, len(actualCollection))
-		//
-		// for _, item := range actualCollection {
-		// 	persistableCollection = append(persistableCollection, item.ToDbFormat())
-		// }
+		actualCollection := items[collectionName]
+		persistableCollection := make([]interface{}, len(actualCollection))
+
+		for i, item := range items[collectionName] {
+			if item == nil {
+				fmt.Println("nil")
+			}
+			persistableCollection[i] = item.ToDbFormat()
+		}
 
 		collection.DropCollection()
-		// err = collection.Insert(persistableCollection...)
-		err = collection.Insert(actualCollection...)
+		err = collection.Insert(persistableCollection...)
 		if err != nil {
 			log.Fatal(err)
 		}
