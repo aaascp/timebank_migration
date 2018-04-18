@@ -30,7 +30,7 @@ func InitFlags() Flags {
 	}
 
 	if *allFlag {
-		*collections = "users[:10],transactions[:10],services[:10],categories"
+		*collections = "user[:10],transaction[:10],service[:10],category"
 	}
 
 	if !*allFlag && *collections == "" {

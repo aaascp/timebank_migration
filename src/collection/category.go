@@ -20,6 +20,8 @@ func (category Category) ToString() string {
 func (category Category) ToDbFormat() map[string]interface{} {
 	dict := make(map[string]interface{})
 	dict["name"] = category.Name
-	dict["subcategories"] = category.Subcategories
+	if len(category.Subcategories) != 0 {
+		dict["subcategories"] = category.Subcategories
+	}
 	return dict
 }

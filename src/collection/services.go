@@ -35,13 +35,18 @@ func (service Service) ToDbFormat() map[string]interface{} {
 	dict["user_name"] = service.UserName
 	dict["description"] = service.Description
 	dict["category"] = service.Category.ToDbFormat()
-	dict["neighborhood"] = service.Neighborhood
+	if service.Neighborhood != "" {
+		dict["neighborhood"] = service.Neighborhood
+	}
+
 	return dict
 }
 
 func (category ServiceCategory) ToDbFormat() map[string]interface{} {
 	dict := make(map[string]interface{})
 	dict["name"] = category.Name
-	dict["subcategory"] = category.Subcategory
+	if category.Subcategory != "" {
+		dict["subcategory"] = category.Subcategory
+	}
 	return dict
 }

@@ -11,17 +11,17 @@ type Items []interface{}
 func possibleCollections(filename, name string) map[string][]collection.Collection {
 	possibleCollections := make(map[string][]collection.Collection)
 
-	if name == "users" || name == "transactions" {
+	if name == "user" || name == "transaction" {
 		users, credits := migration.Users(filename)
 
-		possibleCollections["users"] = users
-		possibleCollections["transactions"] = credits
+		possibleCollections["user"] = users
+		possibleCollections["transaction"] = credits
 
-	} else if name == "services" || name == "categories" {
+	} else if name == "service" || name == "category" {
 		services, categories := migration.Services(filename)
 
-		possibleCollections["services"] = services
-		possibleCollections["categories"] = categories
+		possibleCollections["service"] = services
+		possibleCollections["category"] = categories
 	} else {
 		panic(fmt.Sprintf("Collection [%s] not exists", name))
 	}
