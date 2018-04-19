@@ -14,24 +14,29 @@ func main() {
 	defer recoverHandler()
 
 	flags := cli.InitFlags()
-	printer := operation.MakePrinter(flags.Filename)
-	saver, saverCloser := operation.MakeSaver(flags.Filename)
 
-	defer saverCloser()
+	if flags.InterativeMode {
+		cli.Console(flags.Filename)
+	} else {
+		printer := operation.MakePrinter(flags.Filename)
+		saver, saverCloser := operation.MakeSaver(flags.Filename)
 
-	collections := strings.Split(flags.Collections, ",")
-	regex := regexp.MustCompile(`(\w+)(?:\[(\d+)?:(\d+)\])?`)
+		defer saverCloser()
 
-	for _, collection := range collections {
-		match := regex.FindStringSubmatch(collection)
-		name := match[1]
-		start, _ := strconv.Atoi(match[2])
-		end, _ := strconv.Atoi(match[3])
+		collections := strings.Split(flags.Collections, ",")
+		regex := regexp.MustCompile(`(\w+)(?:\[(\d+)?:(\d+)\])?`)
 
-		if flags.SaveOperation {
-			saver(name)
-		} else {
-			printer(name, start, end)
+		for _, collection := range collections {
+			match := regex.FindStringSubmatch(collection)
+			name := match[1]
+			start, _ := strconv.Atoi(match[2])
+			end, _ := strconv.Atoi(match[3])
+
+			if flags.SaveOperation {
+				saver(name)
+			} else {
+				printer(name, start, end)
+			}
 		}
 	}
 }

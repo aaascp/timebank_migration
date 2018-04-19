@@ -22,7 +22,7 @@ func Collections(filename, name string) map[string][]collection.Collection {
 		collections["service"] = services
 		collections["category"] = categories
 	} else {
-		panic(fmt.Sprintf("Collection [%s] not exists", name))
+		panic(fmt.Sprintf("Collection [%s] does not exists", name))
 	}
 
 	return collections
