@@ -1,20 +1,16 @@
 package operation
 
 import (
-	"fmt"
 	"log"
 	"timebank/src/collection"
-	"timebank/src/migration"
 
 	mgo "gopkg.in/mgo.v2"
 )
 
+type Saver func([]collection.Item, string)
 type Closer func()
-type Saver func(string)
 
-func MakeSaver(filename string) (Saver, Closer) {
-	var items map[string][]collection.Collection
-
+func MakeSaver() (Saver, Closer) {
 	session, err := mgo.Dial("mongodb://admin:admin@ds143039.mlab.com:43039/timebank")
 	if err != nil {
 		panic(err)
@@ -24,20 +20,11 @@ func MakeSaver(filename string) (Saver, Closer) {
 		session.Close()
 	}
 
-	save := func(collectionName string) {
-		collection := session.DB("timebank").C(collectionName)
+	save := func(items []collection.Item, name string) {
+		collection := session.DB("timebank").C(name)
+		persistableCollection := make([]interface{}, len(items))
 
-		if list := items[collectionName]; list == nil {
-			items = migration.Collections(filename, collectionName)
-		}
-
-		actualCollection := items[collectionName]
-		persistableCollection := make([]interface{}, len(actualCollection))
-
-		for i, item := range items[collectionName] {
-			if item == nil {
-				fmt.Println("nil")
-			}
+		for i, item := range items {
 			persistableCollection[i] = item.ToDbFormat()
 		}
 

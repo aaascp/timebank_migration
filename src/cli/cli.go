@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"timebank/src/migration"
 	"timebank/src/operation"
 )
 
@@ -47,8 +48,8 @@ func makeReader(userInput chan string) func() {
 }
 
 func makeDecoder(filename string, isDecoded, isDone chan bool) (func(string), func()) {
-	printer := operation.MakePrinter(filename)
-	saver, saverCloser := operation.MakeSaver(filename)
+	saver, saverCloser := operation.MakeSaver()
+	collectionGetter := migration.Collections(filename)
 
 	regex := regexp.MustCompile(`(save|print|done)(?:\s+(\w+)(?:\[(\d+)?:(\d+)\])?)?`)
 
@@ -60,15 +61,17 @@ func makeDecoder(filename string, isDecoded, isDone chan bool) (func(string), fu
 			fmt.Println("Invalid operation")
 		} else {
 			action := match[1]
-			collection := strings.TrimSpace(match[2])
+			name := strings.TrimSpace(match[2])
 			start, _ := strconv.Atoi(match[3])
 			end, _ := strconv.Atoi(match[4])
 
+			collection := collectionGetter(name)
+
 			switch action {
 			case "print":
-				printer(collection, start, end)
+				operation.Print(collection, start, end)
 			case "save":
-				saver(collection)
+				saver(collection, name)
 				saverCloser()
 			case "done":
 				isDone <- true
@@ -76,7 +79,6 @@ func makeDecoder(filename string, isDecoded, isDone chan bool) (func(string), fu
 				fmt.Println("Invalid operation")
 			}
 		}
-
 		isDecoded <- true
 	}
 

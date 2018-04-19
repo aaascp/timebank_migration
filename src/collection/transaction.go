@@ -14,7 +14,7 @@ type Transaction struct {
 
 func (transaction Transaction) ToString() string {
 	return fmt.Sprintf(
-		"{account: %s, value: %d, type: %s, created_at: %s}\n",
+		"{credit_account: %s, value: %d, type: %s, created_at: %s}\n",
 		transaction.Account,
 		transaction.Value,
 		transaction.Type,
@@ -23,7 +23,7 @@ func (transaction Transaction) ToString() string {
 
 func (transaction Transaction) ToDbFormat() map[string]interface{} {
 	dict := make(map[string]interface{})
-	dict["account"] = transaction.Account
+	dict["credit_account"] = transaction.Account
 	dict["value"] = transaction.Value
 	dict["type"] = transaction.Type
 	dict["created_at"] = transaction.CreatedAt

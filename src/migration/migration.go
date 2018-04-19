@@ -7,9 +7,20 @@ import (
 
 type Items []interface{}
 
-func Collections(filename, name string) map[string][]collection.Collection {
-	collections := make(map[string][]collection.Collection)
+func Collections(filename string) func(string) []collection.Item {
+	collections := make(map[string][]collection.Item)
 
+	return func(name string) []collection.Item {
+		if list := collections[name]; list == nil {
+			fmt.Printf("***** Fetching: %s *****\n", name)
+			migrate(filename, name, collections)
+		}
+		fmt.Printf("***** %s fetched *****\n", name)
+		return collections[name]
+	}
+}
+
+func migrate(filename, name string, collections map[string][]collection.Item) {
 	if name == "user" || name == "transaction" {
 		users, credits := Users(filename)
 
@@ -24,6 +35,4 @@ func Collections(filename, name string) map[string][]collection.Collection {
 	} else {
 		panic(fmt.Sprintf("Collection [%s] does not exists", name))
 	}
-
-	return collections
 }

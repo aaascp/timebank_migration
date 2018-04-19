@@ -13,11 +13,11 @@ type Category struct {
 	subcategories []string
 }
 
-type ServicesCollection []collection.Collection
-type CategoriesCollection []collection.Collection
+type ServicesCollection []collection.Item
+type CategoriesCollection []collection.Item
 
-var services []collection.Collection
-var categories []collection.Collection
+var services []collection.Item
+var categories []collection.Item
 
 var categoryObject collection.ServiceCategory
 var lastCategory collection.Category

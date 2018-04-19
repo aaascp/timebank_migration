@@ -1,6 +1,6 @@
 package collection
 
-type Collection interface {
+type Item interface {
 	ToString() string
 	ToDbFormat() map[string]interface{}
 }

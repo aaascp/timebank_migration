@@ -8,8 +8,8 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
-type UsersList []collection.Collection
-type CreditsList []collection.Collection
+type UsersList []collection.Item
+type CreditsList []collection.Item
 
 func Users(filename string) (UsersList, CreditsList) {
 	const (
