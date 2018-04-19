@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"timebank/src/collection"
+	"timebank/src/migration"
 
 	mgo "gopkg.in/mgo.v2"
 )
@@ -27,7 +28,7 @@ func MakeSaver(filename string) (Saver, Closer) {
 		collection := session.DB("timebank").C(collectionName)
 
 		if list := items[collectionName]; list == nil {
-			items = possibleCollections(filename, collectionName)
+			items = migration.Collections(filename, collectionName)
 		}
 
 		actualCollection := items[collectionName]

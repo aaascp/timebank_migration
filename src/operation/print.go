@@ -3,6 +3,7 @@ package operation
 import (
 	"fmt"
 	"timebank/src/collection"
+	"timebank/src/migration"
 )
 
 type Printer func(string, int, int)
@@ -13,7 +14,7 @@ func MakePrinter(filename string) Printer {
 	return func(name string, start, end int) {
 		if list := items[name]; list == nil {
 			fmt.Printf("***** Fetching: %s *****\n", name)
-			items = possibleCollections(filename, name)
+			items = migration.Collections(filename, name)
 		}
 
 		actualCollection := items[name]
