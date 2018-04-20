@@ -1,4 +1,4 @@
-package utils
+package cli
 
 import (
 	"bufio"
@@ -8,21 +8,21 @@ import (
 
 func Confirm(message string) bool {
 	input := make(chan string)
-	reader := MakeReader(input)
+	reader := makeReader(input)
 
 	fmt.Println(message, " (y/n)")
 	go reader()
 
 	answer := <-input
 	switch answer {
-	case "y":
+	case "y\n":
 		return true
 	default:
 		return false
 	}
 }
 
-func MakeReader(userInput chan string) func() {
+func makeReader(userInput chan string) func() {
 	input := userInput
 
 	return func() {

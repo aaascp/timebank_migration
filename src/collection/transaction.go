@@ -3,6 +3,8 @@ package collection
 import (
 	"fmt"
 	"time"
+
+	mgo "gopkg.in/mgo.v2"
 )
 
 type Transaction struct {
@@ -28,6 +30,22 @@ func (transaction Transaction) ToDbFormat() map[string]interface{} {
 	dict["type"] = transaction.Type
 	dict["created_at"] = transaction.CreatedAt
 	return dict
+}
+
+func TransactionIndexes() []mgo.Index {
+	indexes := make([]mgo.Index, 2)
+
+	indexes = append(indexes,
+		mgo.Index{
+			Key:    []string{"debit_account"},
+			Unique: true})
+
+	indexes = append(indexes,
+		mgo.Index{
+			Key:    []string{"credit_account"},
+			Unique: true})
+
+	return indexes
 }
 
 func formatCreatedAt(createdAt int64) string {

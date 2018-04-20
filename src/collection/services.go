@@ -1,6 +1,10 @@
 package collection
 
-import "fmt"
+import (
+	"fmt"
+
+	mgo "gopkg.in/mgo.v2"
+)
 
 type Service struct {
 	UserName     string
@@ -49,4 +53,31 @@ func (category ServiceCategory) ToDbFormat() map[string]interface{} {
 		dict["subcategory"] = category.Subcategory
 	}
 	return dict
+}
+
+func ServiceIndexes() []mgo.Index {
+	indexes := make([]mgo.Index, 4)
+
+	indexes = append(indexes,
+		mgo.Index{
+			Key:    []string{"user_name"},
+			Unique: true})
+
+	indexes = append(indexes,
+		mgo.Index{
+			Key:    []string{"category.name"},
+			Unique: true})
+
+	indexes = append(indexes,
+		mgo.Index{
+			Key:    []string{"category.subcategory"},
+			Unique: true,
+			Sparse: true})
+
+	indexes = append(indexes,
+		mgo.Index{
+			Key:    []string{"$text:description"},
+			Unique: true})
+
+	return indexes
 }

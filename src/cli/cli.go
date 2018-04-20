@@ -7,7 +7,6 @@ import (
 	"strings"
 	"timebank/src/migration"
 	"timebank/src/operation"
-	"timebank/src/utils"
 )
 
 func Console(filename string) {
@@ -16,7 +15,7 @@ func Console(filename string) {
 	isDecoded := make(chan bool)
 
 	decoder, decoderCloser := makeDecoder(filename, isDecoded, isDone)
-	reader := utils.MakeReader(input)
+	reader := makeReader(input)
 	defer decoderCloser()
 
 	go reader()
@@ -58,7 +57,12 @@ func makeDecoder(filename string, isDecoded, isDone chan bool) (func(string), fu
 			case "print":
 				operation.Print(collection, start, end)
 			case "save":
-				saver(collection, name)
+				confirmation := Confirm("This operation will drop the current collection. Confirm?")
+				if !confirmation {
+					panic("Aborted")
+				} else {
+					saver(collection, name)
+				}
 			case "done":
 				isDone <- true
 			default:

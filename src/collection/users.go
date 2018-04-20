@@ -1,6 +1,10 @@
 package collection
 
-import "fmt"
+import (
+	"fmt"
+
+	mgo "gopkg.in/mgo.v2"
+)
 
 type User struct {
 	Account string
@@ -19,4 +23,26 @@ func (user User) ToDbFormat() map[string]interface{} {
 	dict["account"] = user.Account
 	dict["name"] = user.Name
 	return dict
+}
+
+func UserIndexes() []mgo.Index {
+	indexes := make([]mgo.Index, 3)
+
+	indexes = append(indexes,
+		mgo.Index{
+			Key:    []string{"name"},
+			Unique: true})
+
+	indexes = append(indexes,
+		mgo.Index{
+			Key:    []string{"facebook_id"},
+			Unique: true,
+			Sparse: true})
+
+	indexes = append(indexes,
+		mgo.Index{
+			Key:    []string{"account"},
+			Unique: true})
+
+	return indexes
 }

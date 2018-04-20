@@ -36,7 +36,12 @@ func main() {
 			collection := collectionGetter(name)
 
 			if flags.SaveOperation {
-				saver(collection, name)
+				confirmation := cli.Confirm("This operation will drop the current collection. Confirm?")
+				if !confirmation {
+					panic("Aborted")
+				} else {
+					saver(collection, name)
+				}
 			} else {
 				operation.Print(collection, start, end)
 			}

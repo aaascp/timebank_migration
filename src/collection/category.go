@@ -3,6 +3,8 @@ package collection
 import (
 	"fmt"
 	"strings"
+
+	mgo "gopkg.in/mgo.v2"
 )
 
 type Category struct {
@@ -24,4 +26,21 @@ func (category Category) ToDbFormat() map[string]interface{} {
 		dict["subcategories"] = category.Subcategories
 	}
 	return dict
+}
+
+func CategoryIndexes() []mgo.Index {
+	indexes := make([]mgo.Index, 2)
+
+	indexes = append(indexes,
+		mgo.Index{
+			Key:    []string{"name"},
+			Unique: true})
+
+	indexes = append(indexes,
+		mgo.Index{
+			Key:    []string{"subcategories.name"},
+			Unique: true,
+			Sparse: true})
+
+	return indexes
 }

@@ -1,10 +1,7 @@
 package operation
 
 import (
-	"fmt"
-	"log"
 	"timebank/src/collection"
-	"timebank/src/utils"
 
 	mgo "gopkg.in/mgo.v2"
 )
@@ -13,11 +10,6 @@ type Saver func([]collection.Item, string)
 type Closer func()
 
 func MakeSaver() (Saver, Closer) {
-	confirmation := utils.Confirm("This operation will drop the current collection. Confirm?")
-	if !confirmation {
-		panic("Aborted")
-	}
-
 	session, err := mgo.Dial("mongodb://admin:admin@ds143039.mlab.com:43039/timebank")
 	if err != nil {
 		panic(err)
@@ -28,21 +20,35 @@ func MakeSaver() (Saver, Closer) {
 	}
 
 	save := func(items []collection.Item, name string) {
-		collection := session.DB("timebank").C(name)
-		persistableCollection := make([]interface{}, len(items))
+		dbCollection := session.DB("timebank").C(name)
+		collections := persistableCollection(items)
 
-		for i, item := range items {
-			persistableCollection[i] = item.ToDbFormat()
-		}
+		dbCollection.DropCollection()
+		createIndex(name, dbCollection)
 
-		collection.DropCollection()
-		err = collection.Insert(persistableCollection...)
+		err = dbCollection.Insert(collections...)
 		if err != nil {
-			log.Fatal(err)
-		} else {
-			fmt.Printf("Collection [%s] saved!\n", name)
+			panic(err)
 		}
 	}
 
 	return save, closeSession
+}
+
+func createIndex(name string, dbCollection *mgo.Collection) {
+	indexes := collection.Indexes[name]
+
+	for _, index := range indexes {
+		dbCollection.EnsureIndex(index)
+	}
+}
+
+func persistableCollection(items []collection.Item) []interface{} {
+	persistableCollection := make([]interface{}, len(items))
+
+	for i, item := range items {
+		persistableCollection[i] = item.ToDbFormat()
+	}
+
+	return persistableCollection
 }
