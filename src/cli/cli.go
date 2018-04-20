@@ -1,14 +1,13 @@
 package cli
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"timebank/src/migration"
 	"timebank/src/operation"
+	"timebank/src/utils"
 )
 
 func Console(filename string) {
@@ -17,7 +16,7 @@ func Console(filename string) {
 	isDecoded := make(chan bool)
 
 	decoder, decoderCloser := makeDecoder(filename, isDecoded, isDone)
-	reader := makeReader(input)
+	reader := utils.MakeReader(input)
 	defer decoderCloser()
 
 	go reader()
@@ -32,18 +31,6 @@ func Console(filename string) {
 			fmt.Println("Bye.")
 			return
 		}
-	}
-}
-
-func makeReader(userInput chan string) func() {
-	input := userInput
-
-	return func() {
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("> ")
-
-		text, _ := reader.ReadString('\n')
-		input <- text
 	}
 }
 
@@ -72,7 +59,6 @@ func makeDecoder(filename string, isDecoded, isDone chan bool) (func(string), fu
 				operation.Print(collection, start, end)
 			case "save":
 				saver(collection, name)
-				saverCloser()
 			case "done":
 				isDone <- true
 			default:
